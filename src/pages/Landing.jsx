@@ -1,4 +1,4 @@
-import PageTransition from "../components/PageTransition";
+import PageTransition from "../components/pageTransition";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 

@@ -1,4 +1,4 @@
-import PageTransition from "../components/PageTransition";
+import PageTransition from "../components/pageTransition";
 import { motion } from "framer-motion";
 
 import img7 from "../assets/images/img7.jpg";
