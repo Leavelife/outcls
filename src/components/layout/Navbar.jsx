@@ -1,7 +1,25 @@
 import { motion, useScroll, useTransform } from "framer-motion";
+import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const { scrollY } = useScroll();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Handle responsive breakpoint
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Close menu when clicking on a link
+  const handleLinkClick = () => {
+    setMenuOpen(false);
+  };
 
   // posisi Y dari tengah layar → ke atas
   const logoY = useTransform(scrollY, [0, 200], ["40vh", "0px"]);
@@ -36,17 +54,89 @@ export default function Navbar() {
         OUTCLS
       </motion.div>
 
-      {/* MENU */}
-      <motion.nav
-        style={{
-          ...styles.menu,
-          opacity: menuOpacity,
-        }}
-      >
-        <a href="/">HOME</a>
-        <a href="/about">ABOUT</a>
-        <a href="/contact">CONTACT</a>
-      </motion.nav>
+      {/* DESKTOP MENU */}
+      {!isMobile && (
+        <motion.nav
+          style={{
+            ...styles.menu,
+            opacity: menuOpacity,
+          }}
+        >
+          <NavLink to="/" style={({ isActive }) => ({
+            ...styles.navLink,
+            color: isActive ? "#ff8c00" : "#fff",
+          })}>
+            HOME
+          </NavLink>
+          <NavLink to="/about" style={({ isActive }) => ({
+            ...styles.navLink,
+            color: isActive ? "#ff8c00" : "#fff",
+          })}>
+            ABOUT
+          </NavLink>
+          <NavLink to="/contact" style={({ isActive }) => ({
+            ...styles.navLink,
+            color: isActive ? "#ff8c00" : "#fff",
+          })}>
+            CONTACT
+          </NavLink>
+        </motion.nav>
+      )}
+
+      {/* MOBILE BURGER BUTTON */}
+      {isMobile && (
+        <motion.button
+          style={{
+            ...styles.burgerButton,
+            opacity: menuOpacity,
+          }}
+          onClick={() => setMenuOpen(!menuOpen)}
+          whileTap={{ scale: 0.95 }}
+        >
+          <motion.span
+            animate={menuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
+            style={styles.burgerLine}
+          />
+          <motion.span
+            animate={{ opacity: menuOpen ? 0 : 1 }}
+            style={styles.burgerLine}
+          />
+          <motion.span
+            animate={menuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
+            style={styles.burgerLine}
+          />
+        </motion.button>
+      )}
+
+      {/* MOBILE MENU */}
+      {isMobile && (
+        <motion.nav
+          style={styles.mobileMenu}
+          initial={{ opacity: 0, x: 300 }}
+          animate={menuOpen ? { opacity: 1, x: 0 } : { opacity: 0, x: 300 }}
+          transition={{ duration: 0.3 }}
+          pointerEvents={menuOpen ? "auto" : "none"}
+        >
+          <NavLink to="/" onClick={handleLinkClick} style={({ isActive }) => ({
+            ...styles.mobileNavLink,
+            color: isActive ? "#ff0000" : "#fff",
+          })}>
+            HOME
+          </NavLink>
+          <NavLink to="/about" onClick={handleLinkClick} style={({ isActive }) => ({
+            ...styles.mobileNavLink,
+            color: isActive ? "#ff0000" : "#fff",
+          })}>
+            ABOUT
+          </NavLink>
+          <NavLink to="/contact" onClick={handleLinkClick} style={({ isActive }) => ({
+            ...styles.mobileNavLink,
+            color: isActive ? "#ff0000" : "#fff",
+          })}>
+            CONTACT
+          </NavLink>
+        </motion.nav>
+      )}
     </>
   );
 }
@@ -78,7 +168,6 @@ const styles = {
     pointerEvents: "none",
   },
 
-
   menu: {
     position: "fixed",
     top: "24px",
@@ -90,5 +179,61 @@ const styles = {
     fontSize: "14px",
     color: "#fff",
     zIndex: 999,
+  },
+
+  navLink: {
+    textDecoration: "none",
+    transition: "color 0.3s ease",
+    cursor: "pointer",
+  },
+
+  burgerButton: {
+    position: "fixed",
+    top: "22px",
+    right: "20px",
+    width: "28px",
+    height: "28px",
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-around",
+    padding: 0,
+    zIndex: 999,
+  },
+
+  burgerLine: {
+    width: "24px",
+    height: "2px",
+    background: "#fff",
+    display: "block",
+    transition: "all 0.3s ease",
+  },
+
+  mobileMenu: {
+    position: "fixed",
+    top: 0,
+    right: 0,
+    width: "100%",
+    height: "100vh",
+    background: "rgba(0,0,0,0.95)",
+    backdropFilter: "blur(10px)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "60px",
+    fontFamily: "Inter",
+    letterSpacing: "2px",
+    fontSize: "20px",
+    color: "#fff",
+    zIndex: 997,
+  },
+
+  mobileNavLink: {
+    textDecoration: "none",
+    transition: "color 0.3s ease",
+    cursor: "pointer",
   },
 };
